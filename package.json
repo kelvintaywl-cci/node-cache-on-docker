@@ -1,0 +1,22 @@
+{
+  "name": "cache-on-docker",
+  "version": "0.0.1",
+  "description": "Explore Node dep cache restores",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kelvintaywl",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.23.3",
+    "@babel/plugin-transform-regenerator": "^7.23.3",
+    "@babel/plugin-transform-strict-mode": "^7.23.3",
+    "@babel/preset-env": "^7.23.3",
+    "@babel/runtime": "^7.23.2",
+    "@cypress/code-coverage": "^3.12.10",
+    "@datadog/browser-core": "^5.2.0",
+    "@datadog/browser-logs": "^5.2.0",
+    "@datadog/browser-rum": "^5.2.0"
+  }
+}

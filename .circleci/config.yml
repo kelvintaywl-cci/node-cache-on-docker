@@ -1,0 +1,50 @@
+version: 2.1
+
+jobs:
+  install-deps:
+    parameters:
+      user:
+        type: string
+        description: user to be used for Docker container
+        default: root
+    docker:
+      - image: joinswoop/circle-ci-cypress:1.4
+        user: << parameters.user >>
+    steps:
+      - checkout
+      - run: whoami
+      - run:
+          name: Inspect versions
+          command: |
+            node --version
+            npm --version
+            yarn --version
+      - restore_cache:
+          name: Restore yarn cache
+          keys:
+            - yarn-v1-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
+            - yarn-v1-{{ arch }}-{{ checksum "yarn.lock" }}
+            - yarn-v1-{{ arch }}
+      - run:
+          name: Setup Node
+          no_output_timeout: 15m
+          command:
+            yarn install --no-check-cache --immutable
+      - save_cache:
+          name: Save yarn cache
+          key: yarn-v1-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+          paths:
+          - node_modules
+
+
+workflows:
+  main:
+    jobs:
+      - install-deps:
+          matrix:
+            parameters:
+              user:
+                # user for joinswoop/circle-ci-cypress image
+                - root
+                # default user of cimg/* images
+                - circleci
