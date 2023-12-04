@@ -7,12 +7,20 @@ jobs:
         type: string
         description: user to be used for Docker container
         default: root
+      set-yarn-cache:
+        type: boolean
+        description: set explicitly the Yarn cache folder
+        default: false
     docker:
       - image: cimg/node:18.18.2
         user: << parameters.user >>
     steps:
       - checkout
       - run: whoami
+      - when:
+          condition: << parameters.set-yarn-cache >>
+          steps:
+            - run: yarn config set cache-folder /home/circleci/.cache/yarn
       - run: yarn cache dir
       - run:
           name: Inspect versions
@@ -47,4 +55,6 @@ workflows:
                 # user for joinswoop/circle-ci-cypress image
                 - root
                 # default user of cimg/* images
-                - circleci
+              set-yarn-cache:
+                - true
+                - false
