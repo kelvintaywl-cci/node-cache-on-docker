@@ -8,11 +8,12 @@ jobs:
         description: user to be used for Docker container
         default: root
     docker:
-      - image: joinswoop/circle-ci-cypress:1.4
+      - image: cimg/node:18.18.2
         user: << parameters.user >>
     steps:
       - checkout
       - run: whoami
+      - run: yarn cache dir
       - run:
           name: Inspect versions
           command: |
@@ -35,7 +36,6 @@ jobs:
           key: yarn-v1-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
           paths:
           - node_modules
-
 
 workflows:
   main:
