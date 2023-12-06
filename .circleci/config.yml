@@ -1,15 +1,20 @@
 version: 2.1
 
+executors:
+  root:
+    docker:
+      - image: kelvintaywl/cimg-node-18:root
+  circleci:
+    docker:
+      - image: kelvintaywl/cimg-node-18:circleci
+
 jobs:
   install-deps:
     parameters:
-      user:
-        type: string
-        description: user to be used for Docker container
+      exec:
+        type: executor
         default: root
-    docker:
-      - image: joinswoop/circle-ci-cypress:1.4
-        user: << parameters.user >>
+    executor: << parameters.exec >>
     steps:
       - checkout
       - run: whoami
@@ -22,9 +27,9 @@ jobs:
       - restore_cache:
           name: Restore yarn cache
           keys:
-            - yarn-v1-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
-            - yarn-v1-{{ arch }}-{{ checksum "yarn.lock" }}
-            - yarn-v1-{{ arch }}
+            - << parameters.exec >>-yarn-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
+            - << parameters.exec >>-yarn-{{ arch }}-{{ checksum "yarn.lock" }}
+            - << parameters.exec >>-yarn-{{ arch }}
       - run:
           name: Setup Node
           no_output_timeout: 15m
@@ -32,10 +37,9 @@ jobs:
             yarn install --no-check-cache --immutable
       - save_cache:
           name: Save yarn cache
-          key: yarn-v1-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+          key: << parameters.exec >>-yarn-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
           paths:
           - node_modules
-
 
 workflows:
   main:
@@ -43,8 +47,6 @@ workflows:
       - install-deps:
           matrix:
             parameters:
-              user:
-                # user for joinswoop/circle-ci-cypress image
+              exec:
                 - root
-                # default user of cimg/* images
                 - circleci
