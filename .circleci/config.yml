@@ -1,5 +1,10 @@
 version: 2.1
 
+parameters:
+  cache-version:
+    type: string
+    default: v1
+
 executors:
   root:
     docker:
@@ -27,9 +32,9 @@ jobs:
       - restore_cache:
           name: Restore yarn cache
           keys:
-            - << parameters.exec >>-yarn-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
-            - << parameters.exec >>-yarn-{{ arch }}-{{ checksum "yarn.lock" }}
-            - << parameters.exec >>-yarn-{{ arch }}
+            - << parameters.exec >>-yarn-<< pipeline.parameters.cache-version >>-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
+            - << parameters.exec >>-yarn-<< pipeline.parameters.cache-version >>-{{ arch }}-{{ checksum "yarn.lock" }}
+            - << parameters.exec >>-yarn-<< pipeline.parameters.cache-version >>-{{ arch }}
       - run:
           name: Setup Node
           no_output_timeout: 15m
@@ -37,9 +42,11 @@ jobs:
             yarn install --no-check-cache --immutable
       - save_cache:
           name: Save yarn cache
-          key: << parameters.exec >>-yarn-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+          key: << parameters.exec >>-yarn-<< pipeline.parameters.cache-version >>-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
           paths:
-          - node_modules
+            - node_modules
+            - .yarn/cache
+            - .yarn/install-state.gz
 
 workflows:
   main:
