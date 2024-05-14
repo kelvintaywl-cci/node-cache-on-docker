@@ -6,12 +6,9 @@ parameters:
     default: v1
 
 executors:
-  root:
-    docker:
-      - image: kelvintaywl/cimg-node-18:root
   circleci:
     docker:
-      - image: kelvintaywl/cimg-node-18:circleci
+      - image: cimg/node:18.20
 
 jobs:
   install-deps:
@@ -55,5 +52,4 @@ workflows:
           matrix:
             parameters:
               exec:
-                - root
                 - circleci
