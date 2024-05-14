@@ -29,9 +29,9 @@ jobs:
       - restore_cache:
           name: Restore yarn cache
           keys:
-            - << parameters.exec >>-yarn-<< pipeline.parameters.cache-version >>-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
-            - << parameters.exec >>-yarn-<< pipeline.parameters.cache-version >>-{{ arch }}-{{ checksum "yarn.lock" }}
-            - << parameters.exec >>-yarn-<< pipeline.parameters.cache-version >>-{{ arch }}
+            - yarn-<< pipeline.parameters.cache-version >>-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
+            - yarn-<< pipeline.parameters.cache-version >>-{{ checksum "yarn.lock" }}
+            - yarn-<< pipeline.parameters.cache-version >>
       - run:
           name: Setup Node
           no_output_timeout: 15m
@@ -39,7 +39,7 @@ jobs:
             yarn install --no-check-cache --immutable
       - save_cache:
           name: Save yarn cache
-          key: << parameters.exec >>-yarn-<< pipeline.parameters.cache-version >>-{{ arch }}-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+          key: yarn-<< pipeline.parameters.cache-version >>-{{ checksum "yarn.lock" }}-{{ checksum ".circleci/config.yml" }}
           paths:
             - node_modules
             - .yarn/cache
